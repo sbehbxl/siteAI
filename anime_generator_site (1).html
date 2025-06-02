@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur d'Images Anime</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .style-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .style-btn {
+            padding: 20px;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .style-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .style-btn.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .style-btn.ghibli {
+            background: linear-gradient(135deg, #a8e6cf, #7fcdcd);
+            color: #2c5530;
+        }
+
+        .style-btn.ghibli.selected {
+            background: linear-gradient(135deg, #2c5530, #1a4c96);
+            color: white;
+        }
+
+        .style-btn.bob {
+            background: linear-gradient(135deg, #ffd93d, #ff6b6b);
+            color: #2c3e50;
+        }
+
+        .style-btn.bob.selected {
+            background: linear-gradient(135deg, #f39c12, #e74c3c);
+            color: white;
+        }
+
+        .style-btn.naruto {
+            background: linear-gradient(135deg, #ff9500, #ff5722);
+            color: white;
+        }
+
+        .style-btn.naruto.selected {
+            background: linear-gradient(135deg, #e65100, #bf360c);
+            color: white;
+        }
+
+        .style-btn.onepiece {
+            background: linear-gradient(135deg, #2196f3, #21cbf3);
+            color: white;
+        }
+
+        .style-btn.onepiece.selected {
+            background: linear-gradient(135deg, #0d47a1, #006064);
+            color: white;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .result p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .pricing-section {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+        }
+
+        .pricing-title {
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .pricing-subtitle {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .price-tag {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .price-tag small {
+            font-size: 0.4em;
+            vertical-align: top;
+        }
+
+        .features-list {
+            list-style: none;
+            margin: 20px 0;
+            text-align: left;
+            display: inline-block;
+        }
+
+        .features-list li {
+            margin: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .features-list li:before {
+            content: "✨";
+            position: absolute;
+            left: 0;
+        }
+
+        .subscribe-btn {
+            background: white;
+            color: #ff6b6b;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 20px 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .subscribe-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .trial-btn {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .trial-btn:hover {
+            background: white;
+            color: #ff6b6b;
+        }
+
+        .subscription-status {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .subscription-status.active {
+            display: block;
+        }
+
+        .subscription-status h4 {
+            color: #155724;
+            margin-bottom: 10px;
+        }
+
+        .subscription-status p {
+            color: #155724;
+            margin: 5px 0;
+        }
+
+        .usage-counter {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .usage-counter h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .usage-bar {
+            background: #f8f9fa;
+            border-radius: 20px;
+            height: 20px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .usage-fill {
+            background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.3s ease;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .style-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Générateur d'Images Anime</h1>
+        
+        <!-- Section Pricing -->
+        <div class="pricing-section">
+            <h2 class="pricing-title">🚀 Version Premium</h2>
+            <p class="pricing-subtitle">Générations illimitées + Styles exclusifs + Haute qualité</p>
+            <div class="price-tag">
+                9<small>,99€</small><span style="font-size: 0.3em; vertical-align: bottom;">/mois</span>
+            </div>
+            <ul class="features-list">
+                <li>Générations d'images illimitées</li>
+                <li>4 styles anime premium</li>
+                <li>Résolution HD (1024x1024)</li>
+                <li>Pas de filigrane</li>
+                <li>Support prioritaire</li>
+                <li>Nouveaux styles chaque mois</li>
+            </ul>
+            <button class="subscribe-btn" onclick="subscribe()">S'abonner maintenant</button>
+            <button class="subscribe-btn trial-btn" onclick="startTrial()">Essai gratuit 7 jours</button>
+        </div>
+
+        <!-- Statut d'abonnement -->
+        <div class="subscription-status" id="subscriptionStatus">
+            <h4>✅ Abonnement Actif</h4>
+            <p><strong>Plan :</strong> Premium (9,99€/mois)</p>
+            <p><strong>Prochain paiement :</strong> <span id="nextPayment">02 juillet 2025</span></p>
+            <p><strong>Générations restantes :</strong> Illimitées</p>
+        </div>
+
+        <!-- Compteur d'utilisation (pour les non-abonnés) -->
+        <div class="usage-counter" id="usageCounter">
+            <h4>🎯 Générations gratuites</h4>
+            <p><span id="usageCount">2</span> / 3 générations utilisées aujourd'hui</p>
+            <div class="usage-bar">
+                <div class="usage-fill" id="usageFill" style="width: 67%"></div>
+            </div>
+            <p style="font-size: 0.9em; margin-top: 10px;">
+                Abonnez-vous pour des générations illimitées !
+            </p>
+        </div>
+        
+        <form id="imageForm">
+            <div class="form-group">
+                <label for="description">Description de l'image :</label>
+                <textarea 
+                    id="description" 
+                    name="description" 
+                    placeholder="Décrivez l'image que vous souhaitez générer... (ex: un chat mignon dans un jardin fleuri)"
+                    required
+                ></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Choisissez un style :</label>
+                <div class="style-buttons">
+                    <button type="button" class="style-btn ghibli" data-style="ghibli">
+                        🌱 Style Ghibli
+                    </button>
+                    <button type="button" class="style-btn bob" data-style="bob">
+                        🧽 Style Bob l'Éponge
+                    </button>
+                    <button type="button" class="style-btn naruto" data-style="naruto">
+                        🍥 Style Naruto
+                    </button>
+                    <button type="button" class="style-btn onepiece" data-style="onepiece">
+                        ⚓ Style One Piece
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="generate-btn" id="generateBtn">
+                Générer l'image
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Génération en cours...</p>
+        </div>
+
+        <div class="result" id="result" style="display: none;">
+            <h3>Paramètres de génération :</h3>
+            <p id="resultContent"></p>
+        </div>
+    </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        let selectedStyle = '';
+        let isSubscribed = false;
+        let dailyUsage = 2; // Simuler 2 générations utilisées
+        const maxFreeGenerations = 3;
+
+        // Configuration Stripe (remplacez par vos vraies clés)
+        const stripe = Stripe('pk_test_VOTRE_CLE_PUBLIQUE_STRIPE'); // Remplacez par votre clé publique
+        let elements, cardElement;
+
+        // Initialiser Stripe Elements
+        function initializeStripe() {
+            elements = stripe.elements();
+            cardElement = elements.create('card', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        color: '#424770',
+                        '::placeholder': {
+                            color: '#aab7c4',
+                        },
+                    },
+                },
+            });
+        }
+
+        // Vérifier le statut d'abonnement au chargement
+        window.addEventListener('load', function() {
+            checkSubscriptionStatus();
+            updateUsageDisplay();
+            initializeStripe();
+        });
+
+        function checkSubscriptionStatus() {
+            // Ici vous feriez un appel à votre backend pour vérifier l'abonnement
+            // Pour la démo, on simule avec localStorage
+            const subscription = localStorage.getItem('subscription');
+            if (subscription) {
+                const subData = JSON.parse(subscription);
+                if (new Date(subData.expiresAt) > new Date()) {
+                    isSubscribed = true;
+                    showSubscriptionStatus(subData);
+                }
+            }
+        }
+
+        function showSubscriptionStatus(subData) {
+            document.getElementById('subscriptionStatus').classList.add('active');
+            document.getElementById('usageCounter').style.display = 'none';
+            document.getElementById('nextPayment').textContent = new Date(subData.expiresAt).toLocaleDateString('fr-FR');
+        }
+
+        function updateUsageDisplay() {
+            if (!isSubscribed) {
+                document.getElementById('usageCount').textContent = dailyUsage;
+                const percentage = (dailyUsage / maxFreeGenerations) * 100;
+                document.getElementById('usageFill').style.width = percentage + '%';
+            }
+        }
+
+        function subscribe() {
+            if (isSubscribed) {
+                alert('Vous êtes déjà abonné !');
+                return;
+            }
+            document.getElementById('paymentModal').style.display = 'block';
+            
+            // Monter l'élément carte dans le modal
+            setTimeout(() => {
+                cardElement.mount('#card-element');
+            }, 100);
+        }
+
+        function startTrial() {
+            if (isSubscribed) {
+                alert('Vous êtes déjà abonné !');
+                return;
+            }
+            
+            // Simuler le début d'un essai gratuit
+            const trialData = {
+                plan: 'trial',
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 jours
+                createdAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('subscription', JSON.stringify(trialData));
+            isSubscribed = true;
+            showSubscriptionStatus(trialData);
+            
+            alert('🎉 Essai gratuit de 7 jours activé ! Profitez de toutes les fonctionnalités premium.');
+        }
+
+        function closeModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+            cardElement.unmount();
+        }
+
+        // Traitement du paiement
+        document.getElementById('submit-payment').addEventListener('click', async function() {
+            const {token, error} = await stripe.createToken(cardElement);
+            
+            if (error) {
+                alert('Erreur : ' + error.message);
+                console.error(error);
+            } else {
+                // Ici vous enverriez le token à votre backend pour traiter l'abonnement
+                processSubscription(token);
+            }
+        });
+
+        async function processSubscription(token) {
+            try {
+                // Simuler un appel API pour créer l'abonnement
+                // En réalité, vous feriez un appel à votre backend/n8n
+                
+                const response = await fetch('/create-subscription', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: token.id,
+                        email: 'user@example.com', // Récupérer l'email de l'utilisateur
+                        plan: 'premium'
+                    })
+                });
+                
+                if (response.ok) {
+                    // Succès - simuler l'activation de l'abonnement
+                    const subscriptionData = {
+                        plan: 'premium',
+                        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 jours
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    localStorage.setItem('subscription', JSON.stringify(subscriptionData));
+                    isSubscribed = true;
+                    showSubscriptionStatus(subscriptionData);
+                    closeModal();
+                    
+                    alert('🎉 Abonnement activé avec succès ! Bienvenue dans la version Premium !');
+                } else {
+                    throw new Error('Erreur lors du traitement du paiement');
+                }
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue lors du paiement. Veuillez réessayer.');
+            }
+        }
+
+        // Gestion de la sélection des styles
+        document.querySelectorAll('.style-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Retirer la classe selected de tous les boutons
+                document.querySelectorAll('.style-btn').forEach(b => {
+                    b.classList.remove('selected');
+                });
+                
+                // Ajouter la classe selected au bouton cliqué
+                this.classList.add('selected');
+                selectedStyle = this.dataset.style;
+            });
+        });
+
+        // Gestion du formulaire
+        document.getElementById('imageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const description = document.getElementById('description').value.trim();
+            
+            if (!description) {
+                alert('Veuillez entrer une description de l\'image.');
+                return;
+            }
+            
+            if (!selectedStyle) {
+                alert('Veuillez sélectionner un style.');
+                return;
+            }
+
+            // Vérifier les limites pour les utilisateurs gratuits
+            if (!isSubscribed && dailyUsage >= maxFreeGenerations) {
+                alert('🚫 Limite de générations gratuite atteinte ! Abonnez-vous pour continuer.');
+                return;
+            }
+            
+            // Simulation de la génération
+            startGeneration(description, selectedStyle);
+        });
+
+        function startGeneration(description, style) {
+            const generateBtn = document.getElementById('generateBtn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            
+            // Désactiver le bouton et afficher le loading
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Génération en cours...';
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            
+            // Simulation d'un appel API
+            setTimeout(() => {
+                // Incrémenter l'usage si pas abonné
+                if (!isSubscribed) {
+                    dailyUsage++;
+                    updateUsageDisplay();
+                }
+                
+                // Masquer le loading
+                loading.style.display = 'none';
+                
+                // Réactiver le bouton
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Générer l\'image';
+                
+                // Afficher le résultat
+                const styleNames = {
+                    ghibli: 'Studio Ghibli',
+                    bob: 'Bob l\'Éponge',
+                    naruto: 'Naruto',
+                    onepiece: 'One Piece'
+                };
+                
+                const qualityText = isSubscribed ? 'HD (Premium)' : 'Standard';
+                
+                document.getElementById('resultContent').innerHTML = `
+                    <strong>Description :</strong> ${description}<br>
+                    <strong>Style :</strong> ${styleNames[style]}<br>
+                    <strong>Qualité :</strong> ${qualityText}<br>
+                    <strong>Status :</strong> ${isSubscribed ? '✅ Génération Premium' : '⚡ Génération Standard'}<br>
+                    <em>Image générée avec succès !</em>
+                `;
+                
+                result.style.display = 'block';
+                
+                // Vérifier si l'utilisateur gratuit a atteint sa limite
+                if (!isSubscribed && dailyUsage >= maxFreeGenerations) {
+                    setTimeout(() => {
+                        alert('🎯 Vous avez utilisé toutes vos générations gratuites pour aujourd\'hui ! Abonnez-vous pour continuer.');
+                    }, 1000);
+                }
+                
+            }, 2000);
+        }
+
+        // Fermer le modal en cliquant à l'extérieur
+        window.onclick = function(event) {
+            const modal = document.getElementById('paymentModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
