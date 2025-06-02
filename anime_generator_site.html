@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur d'Images Anime</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .style-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .style-btn {
+            padding: 20px;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .style-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .style-btn.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .style-btn.ghibli {
+            background: linear-gradient(135deg, #a8e6cf, #7fcdcd);
+            color: #2c5530;
+        }
+
+        .style-btn.ghibli.selected {
+            background: linear-gradient(135deg, #2c5530, #1a4c96);
+            color: white;
+        }
+
+        .style-btn.bob {
+            background: linear-gradient(135deg, #ffd93d, #ff6b6b);
+            color: #2c3e50;
+        }
+
+        .style-btn.bob.selected {
+            background: linear-gradient(135deg, #f39c12, #e74c3c);
+            color: white;
+        }
+
+        .style-btn.naruto {
+            background: linear-gradient(135deg, #ff9500, #ff5722);
+            color: white;
+        }
+
+        .style-btn.naruto.selected {
+            background: linear-gradient(135deg, #e65100, #bf360c);
+            color: white;
+        }
+
+        .style-btn.onepiece {
+            background: linear-gradient(135deg, #2196f3, #21cbf3);
+            color: white;
+        }
+
+        .style-btn.onepiece.selected {
+            background: linear-gradient(135deg, #0d47a1, #006064);
+            color: white;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .result p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .style-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Générateur d'Images Anime</h1>
+        
+        <form id="imageForm">
+            <div class="form-group">
+                <label for="description">Description de l'image :</label>
+                <textarea 
+                    id="description" 
+                    name="description" 
+                    placeholder="Décrivez l'image que vous souhaitez générer... (ex: un chat mignon dans un jardin fleuri)"
+                    required
+                ></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Choisissez un style :</label>
+                <div class="style-buttons">
+                    <button type="button" class="style-btn ghibli" data-style="ghibli">
+                        🌱 Style Ghibli
+                    </button>
+                    <button type="button" class="style-btn bob" data-style="bob">
+                        🧽 Style Bob l'Éponge
+                    </button>
+                    <button type="button" class="style-btn naruto" data-style="naruto">
+                        🍥 Style Naruto
+                    </button>
+                    <button type="button" class="style-btn onepiece" data-style="onepiece">
+                        ⚓ Style One Piece
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="generate-btn" id="generateBtn">
+                Générer l'image
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Génération en cours...</p>
+        </div>
+
+        <div class="result" id="result" style="display: none;">
+            <h3>Paramètres de génération :</h3>
+            <p id="resultContent"></p>
+        </div>
+    </div>
+
+    <script>
+        let selectedStyle = '';
+
+        // Gestion de la sélection des styles
+        document.querySelectorAll('.style-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Retirer la classe selected de tous les boutons
+                document.querySelectorAll('.style-btn').forEach(b => {
+                    b.classList.remove('selected');
+                });
+                
+                // Ajouter la classe selected au bouton cliqué
+                this.classList.add('selected');
+                selectedStyle = this.dataset.style;
+            });
+        });
+
+        // Gestion du formulaire
+        document.getElementById('imageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const description = document.getElementById('description').value.trim();
+            
+            if (!description) {
+                alert('Veuillez entrer une description de l\'image.');
+                return;
+            }
+            
+            if (!selectedStyle) {
+                alert('Veuillez sélectionner un style.');
+                return;
+            }
+            
+            // Simulation de la génération
+            startGeneration(description, selectedStyle);
+        });
+
+        function startGeneration(description, style) {
+            const generateBtn = document.getElementById('generateBtn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            
+            // Désactiver le bouton et afficher le loading
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Génération en cours...';
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            
+            // Simulation d'un appel API (remplacez par votre logique n8n)
+            setTimeout(() => {
+                // Masquer le loading
+                loading.style.display = 'none';
+                
+                // Réactiver le bouton
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Générer l\'image';
+                
+                // Afficher le résultat
+                const styleNames = {
+                    ghibli: 'Studio Ghibli',
+                    bob: 'Bob l\'Éponge',
+                    naruto: 'Naruto',
+                    onepiece: 'One Piece'
+                };
+                
+                document.getElementById('resultContent').innerHTML = `
+                    <strong>Description :</strong> ${description}<br>
+                    <strong>Style :</strong> ${styleNames[style]}<br>
+                    <strong>Status :</strong> Prêt à être envoyé à n8n pour génération !<br>
+                    <em>Ici, vous pouvez intégrer l'appel à votre webhook n8n.</em>
+                `;
+                
+                result.style.display = 'block';
+                
+                // Ici vous pouvez ajouter l'appel à votre webhook n8n
+                // sendToN8N(description, style);
+                
+            }, 2000);
+        }
+
+        // Fonction pour envoyer les données à n8n (à personnaliser)
+        function sendToN8N(description, style) {
+            const webhookUrl = 'VOTRE_WEBHOOK_N8N_URL';
+            
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    description: description,
+                    style: style,
+                    timestamp: new Date().toISOString()
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Succès:', data);
+                // Traiter la réponse de n8n
+            })
+            .catch((error) => {
+                console.error('Erreur:', error);
+            });
+        }
+    </script>
+</body>
+</html>
